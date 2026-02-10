@@ -1,0 +1,82 @@
+---
+description: Run Postman collection tests and fix failures
+allowed-tools: Bash, Read, Write, Glob
+---
+
+# /api-test - Run Postman Collection Tests
+
+Run your Postman collection tests directly from Claude Code using the Postman MCP Server. Analyze failures and fix them.
+
+## Prerequisites
+
+Postman MCP Server (full mode) must be configured:
+```bash
+claude mcp add --transport http postman https://mcp.postman.com/mcp --header "Authorization: Bearer <POSTMAN_API_KEY>"
+```
+
+## Workflow
+
+### Step 1: Find the Collection
+
+Use Postman MCP tools to locate collections:
+
+1. **List workspaces:** Call `getWorkspaces` to find the target workspace
+2. **List collections:** Call `getCollections` to see available collections
+3. **Search by name:** If the user names a specific collection, call `searchPostmanElements` with the collection name
+
+If the user provides a collection ID directly, skip to Step 2.
+
+### Step 2: Run Tests
+
+Call `runCollection` with the collection UID.
+
+If the collection uses environment variables:
+1. Call `getEnvironments` to list available environments
+2. Ask which environment to use (or detect from naming convention)
+3. Pass the environment ID to `runCollection`
+
+### Step 3: Parse Results
+
+The `runCollection` response includes test results. Present them clearly:
+
+```
+Test Results: Pet Store API
+  Requests:  15 executed
+  Passed:    12 (80%)
+  Failed:    3
+
+  Failures:
+  1. POST /users → "Status code is 201" → Got 400
+     Request: createUser
+     Folder: User Management
+
+  2. GET /users/{id} → "Response has email field" → Missing
+     Request: getUser
+     Folder: User Management
+
+  3. DELETE /users/{id} → "Status code is 204" → Got 403
+     Request: deleteUser
+     Folder: User Management
+```
+
+### Step 4: Diagnose Failures
+
+For each failure:
+1. Call `getCollectionRequest` to see the full request definition
+2. Call `getCollectionResponse` to see expected responses
+3. Check if the API source code is in the current project
+4. Explain what the test expected vs what happened
+5. If code is local, find the handler and suggest the fix
+
+### Step 5: Fix and Re-run
+
+After fixing code:
+1. Offer to re-run: "Tests fixed. Want me to run the collection again?"
+2. Call `runCollection` again
+3. Show before/after comparison
+
+### Step 6: Update Collection (if needed)
+
+If tests themselves need updating (not the API):
+- Call `updateCollectionRequest` to fix request bodies, headers, or test scripts
+- Call `updateCollectionResponse` to update expected responses
