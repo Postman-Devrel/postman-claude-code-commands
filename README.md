@@ -32,11 +32,11 @@ Copy individual commands into your project's `.claude/commands/` directory:
 
 ```bash
 # All commands
-git clone https://github.com/SterlingChin/postman-claude-code-commands.git
+git clone https://github.com/Postman-Devrel/postman-claude-code-commands.git
 cp postman-claude-code-commands/commands/*.md .claude/commands/
 
 # Or just one command
-curl -o .claude/commands/api-test.md https://raw.githubusercontent.com/SterlingChin/postman-claude-code-commands/main/commands/api-test.md
+curl -o .claude/commands/api-test.md https://raw.githubusercontent.com/Postman-Devrel/postman-claude-code-commands/main/commands/api-test.md
 ```
 
 ### Postman Agent
