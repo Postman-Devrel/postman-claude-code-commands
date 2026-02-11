@@ -113,6 +113,19 @@ Each check has a severity level with weights:
 
 When asked to analyze an API, follow this sequence:
 
+### Step 0: Pre-flight Check
+
+Before running the full analysis, verify the environment:
+
+1. **Find the spec** — Look for OpenAPI files in the project. If none found, ask the user.
+2. **Validate the spec** — Confirm it's parseable YAML/JSON with at least an `info` and `paths` section. If invalid, report errors and stop.
+3. **Check MCP availability** — Try calling `getWorkspaces`. If it fails:
+   - Analysis and fixes still work (static spec analysis is standalone)
+   - Skip Postman push steps (Step 4 "Export to Postman" and Section 8)
+   - Tell the user: "Postman MCP isn't configured. I can still analyze and fix your spec. Run `/postman-setup` if you want to push results to Postman."
+
+Only proceed to Step 1 after pre-flight passes.
+
 ### Step 1: Discover
 
 Find OpenAPI specs in the project. Look for:

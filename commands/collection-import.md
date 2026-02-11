@@ -1,6 +1,6 @@
 ---
 description: Import an OpenAPI spec into Postman as a fully configured workspace
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /collection-import - Import API Spec to Postman
@@ -30,29 +30,41 @@ If the user provides a URL, fetch the spec.
 If the user wants a dedicated workspace:
 - Call `createWorkspace` with name derived from the API title
 - Use type "personal" by default, or "team" if they specify
+- Save the workspace ID for subsequent calls
+
+If using an existing workspace:
+- Call `getWorkspaces` to get the user's workspace ID
 
 ### Step 3: Create Spec in Postman
 
-- Call `createSpec` with the spec name, description, and content
-- This stores the OpenAPI definition in Postman's Spec Hub
+Call `createSpec` with:
+- `workspaceId`: the workspace ID from Step 2
+- `name`: the spec name
+- `type`: one of "OPENAPI:2.0", "OPENAPI:3.0", "OPENAPI:3.1", "ASYNCAPI:2.0"
+- `files`: array of objects with `path` and `content` fields (plus optional `type` field for multi-file specs)
+
+This stores the OpenAPI definition in Postman's Spec Hub.
 
 ### Step 4: Generate Collection
 
-- Call `generateCollection` from the spec
-- This auto-creates a collection with:
-  - Requests for every endpoint
-  - Request bodies from schema examples
-  - Organized by tags/folders
+Call `generateCollection` from the spec. **This is an async operation.** Call `getAsyncSpecTaskStatus` or `getGeneratedCollectionSpecs` to poll for completion before proceeding.
+
+This auto-creates a collection with:
+- Requests for every endpoint
+- Request bodies from schema examples
+- Organized by tags/folders
 
 ### Step 5: Create Environment
 
 Extract variables from the spec and create an environment:
 
-Call `createEnvironment` with variables:
-- `base_url` - from spec's server URL
-- `api_key` - empty, marked as secret (if spec uses API key auth)
-- `auth_token` - empty, marked as secret (if spec uses Bearer auth)
-- Any path parameters used across multiple endpoints
+Call `createEnvironment` with:
+- `workspace`: the workspace ID
+- `environment`: object containing variables:
+  - `base_url` - from spec's server URL
+  - `api_key` - empty, marked as secret (if spec uses API key auth)
+  - `auth_token` - empty, marked as secret (if spec uses Bearer auth)
+  - Any path parameters used across multiple endpoints
 
 ### Step 6: Confirm and Suggest Next Steps
 

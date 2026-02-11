@@ -1,6 +1,6 @@
 ---
 description: Run Postman collection tests and fix failures
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /api-test - Run Postman Collection Tests
@@ -21,14 +21,14 @@ claude mcp add --transport http postman https://mcp.postman.com/mcp --header "Au
 Use Postman MCP tools to locate collections:
 
 1. **List workspaces:** Call `getWorkspaces` to find the target workspace
-2. **List collections:** Call `getCollections` to see available collections
-3. **Search by name:** If the user names a specific collection, call `searchPostmanElements` with the collection name
+2. **List collections:** Call `getCollections` with the workspace ID to see available collections
+3. **Search by name:** If the user names a specific collection, call `getCollections` with the workspace ID and use the `name` filter parameter to search by name. Only use `searchPostmanElements` as a fallback to search the public Postman network.
 
 If the user provides a collection ID directly, skip to Step 2.
 
 ### Step 2: Run Tests
 
-Call `runCollection` with the collection UID.
+Call `runCollection` with the collection ID in `OWNER_ID-UUID` format (e.g., `12345-33823532ab9e41c9b6fd12d0fd459b8b`). Get the UID from the `getCollection` response's `uid` field.
 
 If the collection uses environment variables:
 1. Call `getEnvironments` to list available environments

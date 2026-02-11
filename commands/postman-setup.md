@@ -97,8 +97,9 @@ Test the connection by calling `getWorkspaces`.
 
 After successful connection, confirm the user's workspace has content:
 
-1. Call `getCollections` — show count
-2. Call `getAllSpecs` — show count
+1. Get the workspace ID from the `getWorkspaces` response
+2. Call `getCollections` with the workspace ID — show count
+3. Call `getAllSpecs` with the workspaceId — show count
 
 ```
 Your workspace has:

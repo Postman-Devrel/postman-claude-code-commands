@@ -1,6 +1,6 @@
 ---
 description: Create a Postman mock server from your API spec or collection
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /mock-server - Create a Mock API Server
@@ -18,15 +18,18 @@ claude mcp add --transport http postman https://mcp.postman.com/mcp --header "Au
 
 ### Step 1: Find the Source
 
+**Workspace Resolution:**
+First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use. Use this workspace ID for all subsequent calls.
+
 **Option A: From existing collection**
-- Call `getCollections` to list available collections
+- Call `getCollections` with the workspace ID to list available collections
 - Select the target collection
 
 **Option B: From local spec**
 - Find OpenAPI spec in the project
 - Import it first using the collection-import workflow:
-  1. Call `createSpec` with the spec content
-  2. Call `generateCollection` from the spec
+  1. Call `createSpec` with `workspaceId`, `name`, `type` (one of `OPENAPI:2.0`, `OPENAPI:3.0`, `OPENAPI:3.1`, `ASYNCAPI:2.0`), and `files` (array of `{path, content}` objects)
+  2. Call `generateCollection` with `specId`, `elementType` ("collection"), and `name`. **This is async (HTTP 202)** — poll `getAsyncSpecTaskStatus` for completion before proceeding.
 
 ### Step 2: Check for Examples
 
@@ -49,7 +52,8 @@ For each request without examples:
 ### Step 3: Create Mock Server
 
 Call `createMock` with:
-- Collection ID
+- Workspace ID (required)
+- Collection as a UID (required) - Pass the collection UID (ownerId-collectionId format). If you only have a collectionId, resolve the UID first using `getCollection` to read the `uid` field, or construct it from `getAuthenticatedUser` (me.teamId or me.user.id).
 - Environment ID (if applicable)
 - Name: `<api-name> Mock`
 - Private: false (or true if user prefers)

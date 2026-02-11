@@ -1,6 +1,6 @@
 ---
 description: Security audit your API spec and Postman collection for vulnerabilities
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /api-security - API Security Audit
@@ -20,11 +20,14 @@ For local-only spec auditing, MCP is optional.
 
 ### Step 1: Find the Source
 
+**Workspace Resolution:**
+First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use. Use this workspace ID for all subsequent calls.
+
 **Local spec:**
 - Search for `**/openapi.{json,yaml,yml}`, `**/swagger.{json,yaml,yml}`
 
 **Postman collection (via MCP):**
-- Call `getCollections` to list collections
+- Call `getCollections` with the workspace ID to list collections
 - Call `getCollection` for full detail including auth config
 - Call `getEnvironment` to check for exposed secrets
 
