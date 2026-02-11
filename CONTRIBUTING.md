@@ -86,9 +86,14 @@ Commands that use Postman MCP tools should follow these patterns consistently:
 
 **Workspace resolution:** Every command that reads from Postman should start by calling `getWorkspaces` to get the workspace ID. If multiple workspaces exist, ask the user which one to use.
 
-**Collection UIDs:** Some tools (`runCollection`, `createMock`) require collection UIDs in `OWNER_ID-UUID` format. Resolve from `getCollection` or construct from `getAuthenticatedUser`.
+**Collection UIDs:** Some tools (`runCollection`, `createMock`) require collection UIDs in `OWNER_ID-UUID` format. Get the UID from the `getCollection` response's `uid` field.
 
-**Async operations:** `generateCollection` and `syncCollectionWithSpec` return HTTP 202. Always poll with `getAsyncSpecTaskStatus` before proceeding.
+**Async operations:** `generateCollection` and `syncCollectionWithSpec` return HTTP 202. Poll for completion before proceeding:
+1. Call `getAsyncSpecTaskStatus` (for spec tasks) or `getCollectionUpdatesTasks` (for sync tasks)
+2. Check the `status` field: `pending` | `in-progress` | `completed` | `failed`
+3. Poll every 2-3 seconds
+4. If not completed after 60 seconds, tell the user and suggest checking the Postman UI
+5. If `failed`, report the error details from the task response
 
 **`syncCollectionWithSpec` limitation:** Only works with OpenAPI 3.0 specs.
 

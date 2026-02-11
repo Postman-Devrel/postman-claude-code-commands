@@ -86,8 +86,9 @@ If both a spec and collection exist, keep them in sync:
 
 ## Error Handling
 
-- **MCP not configured:** If Postman MCP tools are unavailable, tell the user to run `/postman-setup` or configure manually with `claude mcp add`. You can still generate local markdown docs without MCP.
-- **MCP timeout:** Retry the tool call once. If it fails again, suggest checking network connectivity and https://status.postman.com.
-- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and reconfigure with `/postman-setup`."
+- **MCP not configured:** Local markdown docs can be generated without MCP. For Postman publishing, tell the user: "Run `/postman-setup` to configure the Postman MCP Server."
+- **MCP timeout:** Retry the tool call once. If it still fails, check https://status.postman.com for outages.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup` to reconfigure."
+- **Plan limitations:** If a tool returns a 403 or plan-related error: "This feature may require a paid Postman plan. Check your plan at https://www.postman.com/pricing/"
 - **Invalid spec:** If the OpenAPI spec has parse errors, report them and ask the user to fix syntax issues first. Offer to help fix common YAML/JSON errors.
 - **Too many results:** If `getCollections` returns many collections, ask the user to specify by name rather than listing all.

@@ -83,8 +83,8 @@ If tests themselves need updating (not the API):
 
 ## Error Handling
 
-- **MCP not configured:** This command requires MCP. Tell the user: "Run `/postman-setup` to configure the Postman MCP Server, or set it up manually." Cannot fall back to local-only mode.
-- **MCP timeout on `runCollection`:** Collection runs can take time for large collections. Retry once. If it times out again, suggest running a single folder: "Try specifying a folder to narrow the run."
-- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **MCP not configured:** This command requires MCP. Tell the user: "Run `/postman-setup` to configure the Postman MCP Server."
+- **MCP timeout:** Retry the tool call once. For `runCollection`, large collections may take longer. If it times out again, suggest running a single folder to narrow the run. Check https://status.postman.com for outages.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup` to reconfigure."
 - **Collection not found:** If `getCollections` returns no matches, ask the user for the collection ID or suggest `/collection-import` to create one.
 - **Plan limitations:** Some Postman plans limit collection runs. If you get a 403 or plan-related error, inform the user: "Collection runs may require a Postman Basic plan or higher."

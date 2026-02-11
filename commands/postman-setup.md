@@ -116,6 +116,33 @@ Your workspace is empty — that's fine! You can:
   - /postman create a collection from my code
 ```
 
+### Step 6: Suggest First Command
+
+After workspace verification, give the user a concrete next action based on what they have:
+
+**If they have collections:**
+```
+Try one of these to get started:
+  /api-test         — Run tests on one of your 12 collections
+  /postman          — Browse and manage your APIs
+  /api-security     — Audit a collection for security issues
+```
+
+**If they have specs but no collections:**
+```
+Try this first:
+  /collection-import — Turn one of your specs into a full collection with environment
+```
+
+**If workspace is empty:**
+```
+Try this first:
+  /collection-import — Import an OpenAPI spec from your project
+
+  Don't have a spec? Try:
+  /postman create a basic REST API collection for my project
+```
+
 ## Error Handling
 
 - **Claude Code not installed:** "This command requires Claude Code CLI. Install it from https://claude.ai/claude-code"

@@ -64,6 +64,12 @@ fi
 
 TARGET_DIR="$1"
 
+if [ ! -d "$TARGET_DIR" ]; then
+  echo "Error: Directory '$TARGET_DIR' does not exist."
+  echo "Create it first or check the path."
+  exit 1
+fi
+
 COMMANDS_SRC="$SCRIPT_DIR/commands"
 AGENTS_SRC="$SCRIPT_DIR/agents"
 COMMANDS_DST="$TARGET_DIR/.claude/commands"
@@ -89,7 +95,18 @@ for f in "$AGENTS_SRC"/*.md; do
 done
 
 echo ""
-echo "Done! Installed $copied files."
-echo ""
-echo "Next: open Claude Code in your project and run /postman-setup"
-echo "It will walk you through API key creation and MCP configuration."
+
+# Validate installation
+if [ -f "$COMMANDS_DST/postman.md" ] && [ -f "$AGENTS_DST/postman-agent.md" ]; then
+  echo "Done! Installed $copied files."
+  echo ""
+  echo "Next steps:"
+  echo "  1. Open Claude Code in your project (or restart if already open)"
+  echo "  2. Run /postman-setup to configure your Postman API key"
+  echo ""
+  echo "Important: If Claude Code is already running, restart it to load the new commands."
+else
+  echo "Installation may have failed — expected files not found."
+  echo "Check that $COMMANDS_DST/ and $AGENTS_DST/ contain .md files."
+  exit 1
+fi

@@ -53,7 +53,7 @@ For each request without examples:
 
 Call `createMock` with:
 - Workspace ID (required)
-- Collection as a UID (required) - Pass the collection UID (ownerId-collectionId format). If you only have a collectionId, resolve the UID first using `getCollection` to read the `uid` field, or construct it from `getAuthenticatedUser` (me.teamId or me.user.id).
+- Collection as a UID (required) - Pass the collection UID in `ownerId-collectionId` format. Get this from the `getCollection` response's `uid` field.
 - Environment ID (if applicable)
 - Name: `<api-name> Mock`
 - Private: false (or true if user prefers)
@@ -96,8 +96,8 @@ To make it private again:
 
 ## Error Handling
 
-- **MCP not configured:** This command requires MCP. Tell the user to run `/postman-setup`.
-- **MCP timeout:** Retry once. Mock creation is usually fast; if it times out, check https://status.postman.com.
-- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **MCP not configured:** This command requires MCP. Tell the user: "Run `/postman-setup` to configure the Postman MCP Server."
+- **MCP timeout:** Retry the tool call once. If it still fails, check https://status.postman.com for outages.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup` to reconfigure."
 - **No examples in collection:** Mock servers need saved response examples. If examples are missing, offer to auto-generate them from schemas before creating the mock.
 - **Plan limitations:** Free plans have a mock server usage limit. If you get a plan-related error: "Mock server creation or usage may require a Postman Basic plan or higher for increased limits."
