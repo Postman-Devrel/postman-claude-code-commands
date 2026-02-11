@@ -27,7 +27,7 @@ First, call `getWorkspaces` to get the user's workspace ID. If multiple workspac
 - Search for `**/openapi.{json,yaml,yml}`, `**/swagger.{json,yaml,yml}`
 
 **Postman collection (via MCP):**
-- Call `getCollections` with the workspace ID to list collections
+- Call `getCollections` with the `workspace` parameter to list collections
 - Call `getCollection` for full detail including auth config
 - Call `getEnvironment` to check for exposed secrets
 

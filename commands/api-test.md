@@ -21,14 +21,14 @@ claude mcp add --transport http postman https://mcp.postman.com/mcp --header "Au
 Use Postman MCP tools to locate collections:
 
 1. **List workspaces:** Call `getWorkspaces` to find the target workspace
-2. **List collections:** Call `getCollections` with the workspace ID to see available collections
-3. **Search by name:** If the user names a specific collection, call `getCollections` with the workspace ID and use the `name` filter parameter to search by name. Only use `searchPostmanElements` as a fallback to search the public Postman network.
+2. **List collections:** Call `getCollections` with the `workspace` parameter to see available collections
+3. **Search by name:** If the user names a specific collection, call `getCollections` with the `workspace` parameter and use the `name` filter parameter to search by name. Only use `searchPostmanElements` as a fallback to search the public Postman network.
 
 If the user provides a collection ID directly, skip to Step 2.
 
 ### Step 2: Run Tests
 
-Call `runCollection` with the collection ID in `OWNER_ID-UUID` format (e.g., `12345-33823532ab9e41c9b6fd12d0fd459b8b`). Get the UID from the `getCollection` response's `uid` field.
+Call `runCollection` with the collection ID in `OWNER_ID-UUID` format (e.g., `12345-33823532ab9e41c9b6fd12d0fd459b8b`). Get the UID from the `getCollection` response's `uid` field. This runs synchronously and returns test results directly.
 
 If the collection uses environment variables:
 1. Call `getEnvironments` to list available environments

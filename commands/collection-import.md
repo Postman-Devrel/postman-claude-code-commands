@@ -47,7 +47,7 @@ This stores the OpenAPI definition in Postman's Spec Hub.
 
 ### Step 4: Generate Collection
 
-Call `generateCollection` from the spec. **This is an async operation.** Call `getAsyncSpecTaskStatus` or `getGeneratedCollectionSpecs` to poll for completion before proceeding.
+Call `generateCollection` from the spec. **This is an async operation (HTTP 202).** Poll `getAsyncSpecTaskStatus` or `getGeneratedCollectionSpecs` for completion before proceeding.
 
 This auto-creates a collection with:
 - Requests for every endpoint

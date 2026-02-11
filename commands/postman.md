@@ -53,14 +53,14 @@ Ask or detect:
 First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use. Use this workspace ID for all subsequent calls.
 
 **If updating existing:**
-1. Call `getCollections` with the workspace ID to list collections in the workspace
+1. Call `getCollections` with the `workspace` parameter to list collections in the workspace
 2. Match by name or ask the user which collection
 3. Call `getCollection` to get current state
 
 **If creating new:**
 1. Read the local OpenAPI spec
 2. Call `createSpec` with `workspaceId`, `name`, `type` (one of "OPENAPI:2.0", "OPENAPI:3.0", "OPENAPI:3.1", "ASYNCAPI:2.0"), and `files` (array of objects with `path` and `content` fields, plus optional `type` field for multi-file specs) to push the spec to Postman's Spec Hub
-3. Call `generateCollection` from the spec. **This is an async operation.** Call `getAsyncSpecTaskStatus` or `getGeneratedCollectionSpecs` to poll for completion before proceeding.
+3. Call `generateCollection` from the spec. **This is an async operation (HTTP 202).** Poll `getAsyncSpecTaskStatus` or `getGeneratedCollectionSpecs` for completion before proceeding.
 4. Call `createEnvironment` with the workspace ID and environment object with variables extracted from the spec:
    - `base_url` from the spec's `servers[0].url`
    - Auth variables based on `securitySchemes` (mark as `secret`)
@@ -70,7 +70,7 @@ First, call `getWorkspaces` to get the user's workspace ID. If multiple workspac
 
 **Spec → Collection (most common):**
 1. Call `createSpec` or `updateSpecFile` with the local spec content
-2. Call `syncCollectionWithSpec` to update the collection. **This returns HTTP 202.** Poll `getCollectionUpdatesTasks` for completion status.
+2. Call `syncCollectionWithSpec` to update the collection. **This is an async operation (HTTP 202).** Poll `getCollectionUpdatesTasks` for completion before proceeding.
 3. **Note:** `syncCollectionWithSpec` only supports OpenAPI 3.0 specifications. For Swagger 2.0 or OpenAPI 3.1 specs, update the spec using `updateSpecFile` and regenerate the collection.
 4. Report what changed: new endpoints, modified schemas, removed paths
 
@@ -108,7 +108,7 @@ Collection synced: "Pet Store API" (15 requests)
 **Workspace Resolution:**
 First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use.
 
-1. Call `getCollections` with the workspace ID and use the `name` filter parameter to search for collections by name in the user's workspace
+1. Call `getCollections` with the `workspace` parameter and use the `name` filter parameter to search for collections by name in the user's workspace
 2. If no results, fall back to `searchPostmanElements` with the API name to search the public Postman network
 3. If multiple matches, list them and ask which one
 4. Call `getCollection` to get the full collection
@@ -178,7 +178,7 @@ Generated: src/clients/users-api.ts
 **Workspace Resolution:**
 First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use.
 
-1. Call `getCollections` with the workspace ID and use the `name` filter parameter to search for collections by name in the user's workspace
+1. Call `getCollections` with the `workspace` parameter and use the `name` filter parameter to search for collections by name in the user's workspace
 2. If results are sparse, try broader terms or search by tags:
    - Call `getTaggedEntities` to find collections by tag
    - As a fallback, call `searchPostmanElements` with the user's query to search the public Postman network

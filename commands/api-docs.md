@@ -31,7 +31,7 @@ Check for API definitions in this order:
 - Call `getSpecDefinition` to pull the full spec
 
 **Postman collections:**
-- Call `getCollections` with the workspace ID to find relevant collections
+- Call `getCollections` with the `workspace` parameter to find relevant collections
 - Call `getCollection` to get full collection detail
 
 ### Step 2: Analyze Documentation Completeness
@@ -81,7 +81,7 @@ Ask the user which output they want:
 ### Step 5: Sync Spec and Collection
 
 If both a spec and collection exist, keep them in sync:
-- Call `syncCollectionWithSpec` with `collectionUid` and `specId` to update collection from spec changes. **Note:** This only works with OpenAPI 3.0 specs and returns HTTP 202 (async). Poll for completion before confirming to the user.
+- Call `syncCollectionWithSpec` with `collectionUid` and `specId` to update collection from spec changes. **This is an async operation (HTTP 202).** Poll `getCollectionUpdatesTasks` for completion before proceeding. **Note:** This only works with OpenAPI 3.0 specs.
 - Or call `syncSpecWithCollection` to update spec from collection changes
 
 ## Error Handling
