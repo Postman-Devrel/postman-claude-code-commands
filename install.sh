@@ -6,7 +6,69 @@ set -euo pipefail
 # Safe to run multiple times (idempotent).
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET_DIR="${1:-.}"
+
+POSTMAN_COMMANDS=(
+  "postman.md"
+  "postman-setup.md"
+  "api-test.md"
+  "api-docs.md"
+  "api-security.md"
+  "collection-import.md"
+  "mock-server.md"
+)
+POSTMAN_AGENTS=(
+  "postman-agent.md"
+)
+
+usage() {
+  echo "Usage: ./install.sh [--uninstall] /path/to/your-project"
+  echo ""
+  echo "  install    Copy Postman commands and agents into your project's .claude/ directory."
+  echo "  --uninstall  Remove previously installed Postman commands and agents."
+  echo ""
+  echo "Run from inside your project? Use: ./install.sh ."
+}
+
+if [ $# -eq 0 ]; then
+  usage
+  exit 1
+fi
+
+# Handle --uninstall flag
+if [ "$1" = "--uninstall" ]; then
+  if [ $# -lt 2 ]; then
+    usage
+    exit 1
+  fi
+  TARGET_DIR="$2"
+  echo "Removing Postman commands and agents from $TARGET_DIR"
+  removed=0
+  for f in "${POSTMAN_COMMANDS[@]}"; do
+    if [ -f "$TARGET_DIR/.claude/commands/$f" ]; then
+      rm "$TARGET_DIR/.claude/commands/$f"
+      echo "  ✗ commands/$f"
+      removed=$((removed + 1))
+    fi
+  done
+  for f in "${POSTMAN_AGENTS[@]}"; do
+    if [ -f "$TARGET_DIR/.claude/agents/$f" ]; then
+      rm "$TARGET_DIR/.claude/agents/$f"
+      echo "  ✗ agents/$f"
+      removed=$((removed + 1))
+    fi
+  done
+  echo ""
+  echo "Removed $removed files."
+  exit 0
+fi
+
+TARGET_DIR="$1"
+
+if [ ! -d "$TARGET_DIR" ]; then
+  echo "Error: Directory '$TARGET_DIR' does not exist."
+  echo "Create it first or check the path."
+  exit 1
+fi
 
 COMMANDS_SRC="$SCRIPT_DIR/commands"
 AGENTS_SRC="$SCRIPT_DIR/agents"
@@ -33,8 +95,18 @@ for f in "$AGENTS_SRC"/*.md; do
 done
 
 echo ""
-echo "Done! Installed $copied files."
-echo ""
-echo "Next: configure the Postman MCP Server if you haven't already:"
-echo '  claude mcp add --transport http postman https://mcp.postman.com/mcp \'
-echo '    --header "Authorization: Bearer YOUR_POSTMAN_API_KEY"'
+
+# Validate installation
+if [ -f "$COMMANDS_DST/postman.md" ] && [ -f "$AGENTS_DST/postman-agent.md" ]; then
+  echo "Done! Installed $copied files."
+  echo ""
+  echo "Next steps:"
+  echo "  1. Open Claude Code in your project (or restart if already open)"
+  echo "  2. Run /postman-setup to configure your Postman API key"
+  echo ""
+  echo "Important: If Claude Code is already running, restart it to load the new commands."
+else
+  echo "Installation may have failed — expected files not found."
+  echo "Check that $COMMANDS_DST/ and $AGENTS_DST/ contain .md files."
+  exit 1
+fi

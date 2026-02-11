@@ -15,7 +15,7 @@
 | Naming | 91% | Excellent |
 | Predictability | 63% | Needs work |
 | Documentation | 35% | Critical issues |
-| Performance | N/A | Static analysis only |
+| Performance | 52% | Needs work |
 | Discoverability | 80% | Good |
 
 ## Top 5 Priority Fixes

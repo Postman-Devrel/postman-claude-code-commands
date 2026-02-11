@@ -26,7 +26,7 @@ An "agent-ready" API is one that an AI agent can discover, understand, call corr
 | **Naming** | Consistent casing, RESTful paths, HTTP semantics | Agents need predictable patterns to reason about |
 | **Predictability** | Response schemas, pagination, date formats | Agents need to parse responses reliably |
 | **Documentation** | Auth docs, rate limits, external links | Agents need context humans get from reading docs |
-| **Performance** | Response times, caching, rate limit headers | Agents need to operate within constraints |
+| **Performance** | Rate limit docs, cache headers, bulk endpoints, async patterns | Agents need to operate within constraints |
 | **Discoverability** | OpenAPI version, server URLs, contact info | Agents need to find and connect to the API |
 
 ### Scoring
@@ -53,7 +53,7 @@ Each check has a severity level with weights:
 
 ### Errors (ERR)
 7. **ERR_001** 4xx error responses defined for each endpoint (Critical)
-8. **ERR_002** Error response schemas include `error`, `code`, `message` fields (Critical)
+8. **ERR_002** Error response schemas include a machine-readable error identifier and human-readable message (Critical) — acceptable patterns: `{error, code, message}`, `{status, message}`, `{type, detail}`, or similar structured format
 9. **ERR_003** 5xx error responses defined (High)
 10. **ERR_004** 429 Too Many Requests response defined (High)
 11. **ERR_005** Error examples provided (Medium)
@@ -92,12 +92,12 @@ Each check has a severity level with weights:
 36. **DOC_006** Terms of service and contact info (Low)
 
 ### Performance (PERF)
-37. **PERF_001** Rate limit headers in responses (X-RateLimit-*) (High)
-38. **PERF_002** Cache headers documented (ETag, Cache-Control) (Medium)
-39. **PERF_003** Compression support documented (Medium)
-40. **PERF_004** Bulk/batch endpoints for high-volume operations (Low)
-41. **PERF_005** Partial response support (fields parameter) (Low)
-42. **PERF_006** Webhook/async patterns for long operations (Low)
+37. **PERF_001** Rate limit headers documented in response schemas (X-RateLimit-*) (High)
+38. **PERF_002** Cache headers documented in response schemas (ETag, Cache-Control) (Medium)
+39. **PERF_003** Compression support noted in API description or server config (Medium)
+40. **PERF_004** Bulk/batch endpoints available for high-volume operations (Low)
+41. **PERF_005** Partial response support (fields parameter) documented (Low)
+42. **PERF_006** Webhook/async patterns documented for long-running operations (Low)
 
 ### Discoverability (DISC)
 43. **DISC_001** OpenAPI 3.0+ used (High)
@@ -112,6 +112,20 @@ Each check has a severity level with weights:
 ## 4. Workflow
 
 When asked to analyze an API, follow this sequence:
+
+### Step 0: Pre-flight Check
+
+Before running the full analysis, verify the environment:
+
+1. **Find the spec** — Look for OpenAPI files in the project. If none found, ask the user.
+2. **Validate the spec** — Confirm it's parseable YAML/JSON with at least an `info` and `paths` section. If invalid, report errors and stop.
+3. **Check MCP availability** — Look for Postman MCP tools using ToolSearch for "mcp__postman__getWorkspaces". If the tool is not found:
+   - Analysis and fixes still work (static spec analysis is standalone)
+   - Skip Postman push steps (Step 4 "Export to Postman" and Section 8)
+   - Tell the user: "Postman MCP isn't configured. I can still analyze and fix your spec. Run `/postman-setup` if you want to push results to Postman."
+   If the tool is found, call `getWorkspaces` to verify the connection works.
+
+Only proceed to Step 1 after pre-flight passes.
 
 ### Step 1: Discover
 
@@ -134,9 +148,11 @@ Read the OpenAPI spec and evaluate each of the 48 checks. For each check:
 4. Calculate the weighted score
 
 **Scoring formula:**
-- For each check: `weight × (passing_items / total_items)`
-- Pillar score: `sum(check_scores) / sum(max_possible_scores) × 100`
-- Overall score: `sum(all_weighted_scores) / sum(all_max_possible) × 100`
+- For each check:
+  - If the check doesn't apply (e.g., no list endpoints for pagination): mark as N/A, exclude from scoring
+  - If applicable: `weight × (passing_items / total_items)`
+- Pillar score: `sum(weighted_scores_for_applicable_checks) / sum(weights_for_applicable_checks) × 100`
+- Overall score: `sum(all_weighted_scores) / sum(all_applicable_weights) × 100`
 
 ### Step 3: Present Results
 
@@ -156,7 +172,7 @@ Introspection:   ███████░░░  72%
 Naming:          █████████░  91%
 Predictability:  ██████░░░░  63%  ← Problem
 Documentation:   ███░░░░░░░  35%  ← Problem
-Performance:     ░░░░░░░░░░  N/A (static analysis only)
+Performance:     █████░░░░░  52%
 Discoverability: ████████░░  80%
 ```
 

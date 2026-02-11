@@ -1,6 +1,6 @@
 ---
 description: Security audit your API spec and Postman collection for vulnerabilities
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /api-security - API Security Audit
@@ -20,11 +20,14 @@ For local-only spec auditing, MCP is optional.
 
 ### Step 1: Find the Source
 
+**Workspace Resolution:**
+First, call `getWorkspaces` to get the user's workspace ID. If multiple workspaces exist, ask which to use. Use this workspace ID for all subsequent calls.
+
 **Local spec:**
 - Search for `**/openapi.{json,yaml,yml}`, `**/swagger.{json,yaml,yml}`
 
 **Postman collection (via MCP):**
-- Call `getCollections` to list collections
+- Call `getCollections` with the `workspace` parameter to list collections
 - Call `getCollection` for full detail including auth config
 - Call `getEnvironment` to check for exposed secrets
 
@@ -117,8 +120,9 @@ After fixes, re-run the audit to show improvement.
 
 ## Error Handling
 
-- **MCP not configured:** Security auditing works on local specs without MCP. Postman-specific checks (environment secrets, collection auth) require MCP. Tell the user to run `/postman-setup` if they want full auditing.
-- **MCP timeout:** Retry once. If it persists, fall back to local-only spec analysis and note which checks were skipped.
-- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **MCP not configured:** Local spec auditing works without MCP. For Postman-specific checks (environment secrets, collection auth), tell the user: "Run `/postman-setup` to configure the Postman MCP Server."
+- **MCP timeout:** Retry the tool call once. If it still fails, fall back to local-only spec analysis and note which checks were skipped. Check https://status.postman.com for outages.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup` to reconfigure."
+- **Plan limitations:** If a tool returns a 403 or plan-related error: "This feature may require a paid Postman plan. Check your plan at https://www.postman.com/pricing/"
 - **No spec found:** Ask the user for the path. If they don't have a spec, offer to audit a Postman collection directly via MCP.
 - **Spec too large:** For large specs (100+ endpoints), audit in batches by tag or path prefix. Present results per group.

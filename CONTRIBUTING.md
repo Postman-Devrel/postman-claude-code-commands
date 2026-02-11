@@ -50,7 +50,7 @@ Commands are Markdown files with YAML frontmatter:
 ```markdown
 ---
 description: Short description shown in the command picker
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /command-name — Title
@@ -79,6 +79,25 @@ Brief description of what this command does.
 - [ ] Workflow steps
 - [ ] Error handling
 - [ ] Added to README.md
+
+## Common MCP Patterns
+
+Commands that use Postman MCP tools should follow these patterns consistently:
+
+**Workspace resolution:** Every command that reads from Postman should start by calling `getWorkspaces` to get the workspace ID. If multiple workspaces exist, ask the user which one to use.
+
+**Collection UIDs:** Some tools (`runCollection`, `createMock`) require collection UIDs in `OWNER_ID-UUID` format. Get the UID from the `getCollection` response's `uid` field.
+
+**Async operations:** `generateCollection` and `syncCollectionWithSpec` return HTTP 202. Poll for completion before proceeding:
+1. Call `getAsyncSpecTaskStatus` (for spec tasks) or `getCollectionUpdatesTasks` (for sync tasks)
+2. Check the `status` field: `pending` | `in-progress` | `completed` | `failed`
+3. Poll every 2-3 seconds
+4. If not completed after 60 seconds, tell the user and suggest checking the Postman UI
+5. If `failed`, report the error details from the task response
+
+**`syncCollectionWithSpec` limitation:** Only works with OpenAPI 3.0 specs.
+
+**Workspace search:** Use `getCollections` with the `workspace` parameter to search a user's own collections. `searchPostmanElements` only searches the public Postman network.
 
 ## Style Guide
 

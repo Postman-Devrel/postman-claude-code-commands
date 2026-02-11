@@ -1,30 +1,43 @@
 # Postman Commands & Agents for Claude Code
 
-Official Postman commands and agents for Claude Code. Analyze APIs, run tests, generate docs, create mocks, and audit security — all from your terminal.
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Postman MCP](https://img.shields.io/badge/Postman-MCP%20Server-orange)](https://github.com/postmanlabs/postman-mcp-server)
+
+Slash commands and agents that connect [Claude Code](https://docs.anthropic.com/en/docs/claude-code) to the [Postman MCP Server](https://github.com/postmanlabs/postman-mcp-server). Analyze APIs, run tests, generate docs, create mocks, and audit security from your terminal.
+
+> **What's MCP?** [Model Context Protocol](https://modelcontextprotocol.io/) lets AI tools like Claude Code call external services directly. The Postman MCP Server gives Claude Code access to your Postman workspaces, collections, and APIs.
 
 ## Quick Start
 
 ```bash
-# 1. Clone and install commands
+# 1. Clone the repo (anywhere — it's not part of your project)
 git clone https://github.com/Postman-Devrel/postman-claude-code-commands.git
+
+# 2. Install commands into your project
 cd postman-claude-code-commands && ./install.sh /path/to/your-project
 
-# 2. Configure the Postman MCP Server
+# 3. Open Claude Code in your project and run guided setup
+/postman-setup
+```
+
+That's it. `/postman-setup` walks you through API key creation, MCP configuration, and workspace verification.
+
+<details>
+<summary>Manual MCP setup (if you prefer)</summary>
+
+```bash
 claude mcp add --transport http postman https://mcp.postman.com/mcp \
   --header "Authorization: Bearer YOUR_POSTMAN_API_KEY"
-
-# 3. Use! Open Claude Code and type /postman
 ```
 
 Get your API key at [postman.postman.co/settings/me/api-keys](https://postman.postman.co/settings/me/api-keys).
 
-Or run `/postman-setup` inside Claude Code for guided configuration.
+</details>
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/claude-code) CLI
-- [Postman](https://www.postman.com/) account with API key
-- Postman MCP Server (configured in Quick Start step 2)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) v1.0+ (requires MCP support)
+- [Postman account](https://identity.getpostman.com/signup) (free plan works for most commands, no desktop app required)
 
 ## Commands
 
@@ -51,7 +64,9 @@ Do you need to...
 └── Create a mock server?             → /mock-server
 ```
 
-**`/postman` is the Swiss army knife.** It handles collection sync, client code generation, and API search. The other commands are specialist shortcuts — they go deeper on one task with more guided workflows.
+**`/postman` is the Swiss army knife.** It handles collection sync, client code generation, and API search. The other commands are specialist shortcuts with more guided workflows and better error handling for their specific task.
+
+**`/postman` vs `/collection-import`:** Both can import specs. Use `/collection-import` when you want the full guided flow (spec + collection + environment + next steps). Use `/postman` when importing is one step in a larger task.
 
 ## API Readiness Analyzer (Agent)
 
@@ -110,26 +125,46 @@ cp postman-claude-code-commands/agents/*.md .claude/agents/
 
 ### Single command via curl
 
+> **Note:** This installs only `/postman`. For the full set (including `/postman-setup`), use the installer above.
+
 ```bash
 mkdir -p .claude/commands
 curl -o .claude/commands/postman.md \
   https://raw.githubusercontent.com/Postman-Devrel/postman-claude-code-commands/main/commands/postman.md
 ```
 
+### Uninstall
+
+```bash
+./install.sh --uninstall /path/to/your-project
+```
+
+This removes only the Postman command and agent files. Your other `.claude/` files are untouched.
+
 ## Example Output
 
 See [`examples/sample-readiness-report.md`](examples/sample-readiness-report.md) for a realistic analysis report showing pillar scores, priority fixes, and before/after improvements.
 
-## Compatibility
+## Commands vs Plugin vs Raw MCP
 
-- **Postman MCP Server:** Tested with v2.x
-- **Claude Code:** Requires MCP support (v1.0+)
-- **Postman Plans:** Core commands work on all plans. Some features (monitors, team workspaces) may require paid plans.
+| | Commands (this repo) | [Postman Plugin](https://github.com/Postman-Devrel/postman-plugin) | Raw MCP |
+|---|---|---|---|
+| Setup | One script | npm install | Manual `claude mcp add` |
+| Scope | Per-project | Global | Global |
+| Customization | Edit markdown files | Limited | Full control |
+| Learning curve | Low | Medium | High |
+| Best for | Task-specific workflows | Full API lifecycle | Power users |
+
+**Start here.** These commands give you guided workflows for common tasks. Upgrade to the plugin if you need advanced features.
 
 ## Related
 
 - [Postman MCP Server](https://github.com/postmanlabs/postman-mcp-server) — The MCP server powering these commands
 - [Postman Plugin for Claude Code](https://github.com/Postman-Devrel/postman-plugin) — Full Postman API lifecycle management plugin
+
+## Troubleshooting
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues (commands not found, MCP connection failures, auth errors, plan limits).
 
 ## Contributing
 

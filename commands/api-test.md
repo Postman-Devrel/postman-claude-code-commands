@@ -1,6 +1,6 @@
 ---
 description: Run Postman collection tests and fix failures
-allowed-tools: Bash, Read, Write, Glob
+allowed-tools: Bash, Read, Write, Glob, mcp__postman__*
 ---
 
 # /api-test - Run Postman Collection Tests
@@ -21,14 +21,14 @@ claude mcp add --transport http postman https://mcp.postman.com/mcp --header "Au
 Use Postman MCP tools to locate collections:
 
 1. **List workspaces:** Call `getWorkspaces` to find the target workspace
-2. **List collections:** Call `getCollections` to see available collections
-3. **Search by name:** If the user names a specific collection, call `searchPostmanElements` with the collection name
+2. **List collections:** Call `getCollections` with the `workspace` parameter to see available collections
+3. **Search by name:** If the user names a specific collection, call `getCollections` with the `workspace` parameter and use the `name` filter parameter to search by name. Only use `searchPostmanElements` as a fallback to search the public Postman network.
 
 If the user provides a collection ID directly, skip to Step 2.
 
 ### Step 2: Run Tests
 
-Call `runCollection` with the collection UID.
+Call `runCollection` with the collection ID in `OWNER_ID-UUID` format (e.g., `12345-33823532ab9e41c9b6fd12d0fd459b8b`). Get the UID from the `getCollection` response's `uid` field. This runs synchronously and returns test results directly.
 
 If the collection uses environment variables:
 1. Call `getEnvironments` to list available environments
@@ -83,8 +83,8 @@ If tests themselves need updating (not the API):
 
 ## Error Handling
 
-- **MCP not configured:** This command requires MCP. Tell the user: "Run `/postman-setup` to configure the Postman MCP Server, or set it up manually." Cannot fall back to local-only mode.
-- **MCP timeout on `runCollection`:** Collection runs can take time for large collections. Retry once. If it times out again, suggest running a single folder: "Try specifying a folder to narrow the run."
-- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **MCP not configured:** This command requires MCP. Tell the user: "Run `/postman-setup` to configure the Postman MCP Server."
+- **MCP timeout:** Retry the tool call once. For `runCollection`, large collections may take longer. If it times out again, suggest running a single folder to narrow the run. Check https://status.postman.com for outages.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup` to reconfigure."
 - **Collection not found:** If `getCollections` returns no matches, ask the user for the collection ID or suggest `/collection-import` to create one.
 - **Plan limitations:** Some Postman plans limit collection runs. If you get a 403 or plan-related error, inform the user: "Collection runs may require a Postman Basic plan or higher."

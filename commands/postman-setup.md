@@ -97,8 +97,9 @@ Test the connection by calling `getWorkspaces`.
 
 After successful connection, confirm the user's workspace has content:
 
-1. Call `getCollections` — show count
-2. Call `getAllSpecs` — show count
+1. Get the workspace ID from the `getWorkspaces` response
+2. Call `getCollections` with the `workspace` parameter — show count
+3. Call `getAllSpecs` with the workspaceId — show count
 
 ```
 Your workspace has:
@@ -113,6 +114,33 @@ If the workspace is empty:
 Your workspace is empty — that's fine! You can:
   - /collection-import to import an OpenAPI spec
   - /postman create a collection from my code
+```
+
+### Step 6: Suggest First Command
+
+After workspace verification, give the user a concrete next action based on what they have:
+
+**If they have collections:**
+```
+Try one of these to get started:
+  /api-test         — Run tests on one of your 12 collections
+  /postman          — Browse and manage your APIs
+  /api-security     — Audit a collection for security issues
+```
+
+**If they have specs but no collections:**
+```
+Try this first:
+  /collection-import — Turn one of your specs into a full collection with environment
+```
+
+**If workspace is empty:**
+```
+Try this first:
+  /collection-import — Import an OpenAPI spec from your project
+
+  Don't have a spec? Try:
+  /postman create a basic REST API collection for my project
 ```
 
 ## Error Handling
