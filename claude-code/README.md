@@ -19,18 +19,24 @@ claude mcp add --transport http postman https://mcp.postman.com/mcp \
 
 This configures the **full** MCP server (100+ Postman tools).
 
-### 3. Install the /postman Command
+### 3. Install Commands
 
 ```bash
-# Option A: Copy the command file
+# Option A: Use the installer
+git clone https://github.com/Postman-Devrel/postman-claude-code-commands.git
+cd postman-claude-code-commands && ./install.sh /path/to/your-project
+
+# Option B: Copy manually
+mkdir -p .claude/commands
+cp postman-claude-code-commands/commands/*.md .claude/commands/
+
+# Option C: Single command via curl
 mkdir -p .claude/commands
 curl -o .claude/commands/postman.md \
-  https://raw.githubusercontent.com/Postman-Devrel/postman-ai-integrations/main/claude-code/commands/postman.md
-
-# Option B: Clone and copy
-git clone https://github.com/Postman-Devrel/postman-ai-integrations.git
-cp postman-ai-integrations/claude-code/commands/postman.md .claude/commands/
+  https://raw.githubusercontent.com/Postman-Devrel/postman-claude-code-commands/main/commands/postman.md
 ```
+
+Or run `/postman-setup` inside Claude Code for guided first-run configuration.
 
 ## What You Can Do
 
@@ -73,5 +79,4 @@ Natural language search across all your Postman collections. Get answers, not li
 ## Related
 
 - [Postman MCP Server](https://github.com/postmanlabs/postman-mcp-server) — The engine powering this integration
-- [Postman for Cursor](../cursor/) — Cursor IDE integration with rules and MCP config
-- [Postman Plugin](https://github.com/Postman-Devrel/postman-plugin) — Extended Postman plugin for Claude Code (16 capabilities)
+- [Postman Plugin](https://github.com/Postman-Devrel/postman-plugin) — Extended Postman plugin for Claude Code

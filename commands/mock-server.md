@@ -89,3 +89,11 @@ If the user wants the mock publicly accessible:
 
 To make it private again:
 - Call `unpublishMock`
+
+## Error Handling
+
+- **MCP not configured:** This command requires MCP. Tell the user to run `/postman-setup`.
+- **MCP timeout:** Retry once. Mock creation is usually fast; if it times out, check https://status.postman.com.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **No examples in collection:** Mock servers need saved response examples. If examples are missing, offer to auto-generate them from schemas before creating the mock.
+- **Plan limitations:** Free plans have a mock server usage limit. If you get a plan-related error: "Mock server creation or usage may require a Postman Basic plan or higher for increased limits."

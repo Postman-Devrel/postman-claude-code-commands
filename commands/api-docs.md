@@ -75,3 +75,11 @@ Ask the user which output they want:
 If both a spec and collection exist, keep them in sync:
 - Call `syncCollectionWithSpec` to update collection from spec changes
 - Or call `syncSpecWithCollection` to update spec from collection changes
+
+## Error Handling
+
+- **MCP not configured:** If Postman MCP tools are unavailable, tell the user to run `/postman-setup` or configure manually with `claude mcp add`. You can still generate local markdown docs without MCP.
+- **MCP timeout:** Retry the tool call once. If it fails again, suggest checking network connectivity and https://status.postman.com.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and reconfigure with `/postman-setup`."
+- **Invalid spec:** If the OpenAPI spec has parse errors, report them and ask the user to fix syntax issues first. Offer to help fix common YAML/JSON errors.
+- **Too many results:** If `getCollections` returns many collections, ask the user to specify by name rather than listing all.
