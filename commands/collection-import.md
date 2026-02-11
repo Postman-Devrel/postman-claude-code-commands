@@ -67,3 +67,11 @@ Workspace set up: "Pet Store API"
   - /mock-server → Create a mock for frontend development
   - /api-docs    → Publish documentation
 ```
+
+## Error Handling
+
+- **MCP not configured:** This command requires MCP. Tell the user to run `/postman-setup`.
+- **MCP timeout:** Retry once. If `createSpec` or `generateCollection` times out, the spec may be too large. Suggest breaking it into smaller specs by domain.
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys"
+- **Invalid spec:** If the spec has parse errors (invalid YAML/JSON, missing required OpenAPI fields), report the specific errors. Offer to fix common issues like missing `info` or `paths` fields.
+- **Plan limitations:** Workspace creation may be limited on free plans. If `createWorkspace` fails, use the default "My Workspace" instead.

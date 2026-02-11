@@ -249,3 +249,12 @@ Use this context to make smarter tool choices:
 - When syncing, show what changed, not the process.
 - When generating code, write it to a file. Don't dump it in chat.
 - If something fails, say what went wrong and suggest a fix. Don't apologize.
+
+## Error Handling
+
+- **MCP not configured:** If Postman MCP tools are unavailable, tell the user: "Run `/postman-setup` to configure the Postman MCP Server." Do not attempt workarounds without MCP.
+- **MCP timeout:** Retry the tool call once. If it fails again: "The Postman MCP Server isn't responding. Check your network and https://status.postman.com."
+- **API key invalid (401):** "Your Postman API key was rejected. Generate a new one at https://postman.postman.co/settings/me/api-keys and run `/postman-setup`."
+- **Too many results:** If search returns many results, ask the user to be more specific. Use tags or workspace filtering to narrow down.
+- **Invalid spec:** If a local spec has parse errors, report them clearly with line numbers if possible. Offer to fix common YAML/JSON syntax issues.
+- **Plan limitations:** If a tool returns a 403 or plan-related error: "This feature may require a paid Postman plan. Check your plan at https://www.postman.com/pricing/"
